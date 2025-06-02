@@ -1,3 +1,15 @@
+$Console:Only
+For I = 1 To _CommandCount
+    If _FileExists(Command$(I)) Then
+        Open Command$(I) For Binary As #1
+        F$ = String$(LOF(1), 0)
+        Get #1, , F$
+        Close #1
+        ST! = Timer(0.01)
+        Print Command$(I); "->"; LCase$(SHA256$64(F$)); ", "; PrintTime(Timer(0.01) - ST!)
+    End If
+Next I
+System
 Function SHA224$56 (I$)
     Dim As _Unsigned Long I, Part, Message_Parts, Parts, Message_Length
     Dim As _Unsigned Long h(0 To 7), a, b, c, d, e, f, g, h, w(0 To 63), s0, s1, ch, temp1, temp2, maj
@@ -17,7 +29,7 @@ Function SHA224$56 (I$)
     Asc(Padding$, Len(Padding$) - 1) = _SHR(Message_Length, 8) And 255
     Asc(Padding$, Len(Padding$) - 2) = _SHR(Message_Length, 16) And 255
     Message_Parts = _SHR(Message_Length, 9)
-    Padding$ = Mid$(I$, _SHL(Message_Parts, 6)) + Padding$
+    Padding$ = Mid$(I$, _SHL(Message_Parts, 6) + 1) + Padding$
     Parts = Message_Parts + _SHR(Len(Padding$), 6)
     For Part = 1 To Parts
         If Part > Message_Parts Then
@@ -33,7 +45,6 @@ Function SHA224$56 (I$)
             s1 = rightRotateLong(w(I - 2), 17) Xor rightRotateLong(w(I - 2), 19) Xor _SHR(w(I - 2), 10)
             w(I) = w(I - 16) + s0 + w(I - 7) + s1
         Next I
-        Print
         a = h(0): b = h(1): c = h(2): d = h(3): e = h(4): f = h(5): g = h(6): h = h(7)
         For I = 0 To 63
             s1 = rightRotateLong(e, 6) Xor rightRotateLong(e, 11) Xor rightRotateLong(e, 25)
@@ -92,7 +103,7 @@ Function SHA256$64 (I$)
     Asc(Padding$, Len(Padding$) - 6) = _SHR(Message_Length, 48) And 255
     Asc(Padding$, Len(Padding$) - 7) = _SHR(Message_Length, 56) And 255
     Message_Parts = _SHR(Message_Length, 9)
-    Padding$ = Mid$(I$, _SHL(Message_Parts, 6)) + Padding$
+    Padding$ = Mid$(I$, _SHL(Message_Parts, 6) + 1) + Padding$
     Parts = Message_Parts + _SHR(Len(Padding$), 6)
     For Part = 1 To Parts
         If Part > Message_Parts Then
@@ -108,7 +119,6 @@ Function SHA256$64 (I$)
             s1 = rightRotateLong(w(I - 2), 17) Xor rightRotateLong(w(I - 2), 19) Xor _SHR(w(I - 2), 10)
             w(I) = w(I - 16) + s0 + w(I - 7) + s1
         Next I
-        Print
         a = h(0): b = h(1): c = h(2): d = h(3): e = h(4): f = h(5): g = h(6): h = h(7)
         For I = 0 To 63
             s1 = rightRotateLong(e, 6) Xor rightRotateLong(e, 11) Xor rightRotateLong(e, 25)
@@ -149,3 +159,4 @@ End Function
 '$Include:'include\hex.bm'
 '$Include:'include\bits.bm'
 '$Include:'include\reversecvl.bm'
+'$Include:'include\printtime.bm'
