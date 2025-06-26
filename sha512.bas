@@ -1,12 +1,14 @@
 $Console:Only
 For I = 1 To _CommandCount
-    If _FileExists(Command$(I)) Then
-        Open Command$(I) For Binary As #1
+    INFILE$ = Command$(I)
+    If _FileExists(INFILE$) = 0 Then INFILE$ = _StartDir$ + "\" + INFILE$
+    If _FileExists(INFILE$) Then
+        Open INFILE$ For Binary As #1
         F$ = String$(LOF(1), 0)
         Get #1, , F$
         Close #1
         ST! = Timer(0.01)
-        Print Command$(I); "->"; LCase$(SHA512$128(F$)); ", "; PrintTime(Timer(0.01) - ST!)
+        Print INFILE$; "->"; LCase$(SHA512$128(F$)); ", "; PrintTime(Timer(0.01) - ST!)
     End If
 Next I
 System
